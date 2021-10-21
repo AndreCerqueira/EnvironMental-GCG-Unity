@@ -4,8 +4,8 @@ Game developed under the SAP - Game Changing Games project
 
 ## Team
 
-André Cerqueira
-Bruna Macieira
-Camila Coelho
-Daniela Treffner
-Roman Tsypin
+* André Cerqueira
+* Bruna Macieira
+* Camila Coelho
+* Daniela Treffner
+* Roman Tsypin
