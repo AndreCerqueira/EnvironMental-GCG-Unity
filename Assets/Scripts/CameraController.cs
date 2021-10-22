@@ -4,29 +4,27 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    // Variables
     Vector3 touchStart;
     public float zoomOutMin = 1;
-    public float zoomOutMax = 8;
-
-    int mapWidth;
-    int mapHeight;
+    public float zoomOutMax = 6;
+    public bool cameraMoving = false;
+    int width;
+    int height;
 
     void Start() 
     {
         WorldGenerator worldGenerator = GameObject.Find("Grid/Tilemap").GetComponent<WorldGenerator>();
-        mapWidth = worldGenerator.width;
-        mapHeight = worldGenerator.height;
+        width = GameData.width;
+        height = GameData.height;
+
+        transform.position = worldGenerator.getCityPosition();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Min x: 0
-        // Min y: 0
-        // Max x: width
-        // Max y: height
 
-        
         if (Input.GetMouseButtonDown(0))
         {
             touchStart = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -49,9 +47,10 @@ public class CameraController : MonoBehaviour
         else if (Input.GetMouseButton(0))
         {
             Vector3 direction = touchStart - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            StartCoroutine(detectCameraMoving());
 
             Vector3 nextPosition = Camera.main.transform.position + direction;
-            if (nextPosition.x >= 0 && nextPosition.x <= mapWidth && nextPosition.y >= 0 && nextPosition.y <= mapHeight)
+            if (nextPosition.x >= 0 && nextPosition.x <= width && nextPosition.y >= 0 && nextPosition.y <= height)
                 Camera.main.transform.position += direction;
         }
 
@@ -62,5 +61,15 @@ public class CameraController : MonoBehaviour
     void zoom(float increment)
     {
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - increment, zoomOutMin, zoomOutMax);
+    }
+
+    public IEnumerator detectCameraMoving()
+    {
+        yield return new WaitForSeconds(0.1f);
+        
+        if (Input.GetMouseButton(0))
+            cameraMoving = true;
+        else
+            cameraMoving = false;
     }
 }

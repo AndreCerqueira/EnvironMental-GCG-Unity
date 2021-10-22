@@ -6,13 +6,19 @@ using UnityEngine;
 public class WorldGenerator : MonoBehaviour
 {
     // Variables
-    public int width, height;
+    int width, height;
     public TileBase[] tiles;
+    public TileBase tileCity;
     public Tilemap tileMap;
-    public int[,] map;
+    Vector2Int cityPos;
+    public Tile[,] map;
 
     void Start()
     {
+        // Set data
+        width = GameData.width;
+        height = GameData.height;
+
         Generation();
     }
 
@@ -27,34 +33,49 @@ public class WorldGenerator : MonoBehaviour
     void Generation()
     {
         tileMap.ClearAllTiles();
-        map = GenerateArray(width, height, true);
-        map = TerrainGeneration(map);
-        RenderMap(map, tileMap);
+        generateArray(width, height, true);
+        placeWater();
+        terrainGeneration();
+        renderMap();
     }
 
-    public int[,] GenerateArray(int width, int height, bool empty) 
+    public void placeWater() 
     {
-        int[,] map = new int[width, height];
+        for (int x = -17; x < width+17; x++)
+        {
+            for (int y = -17; y < height+17; y++)
+            {
+                tileMap.SetTile(new Vector3Int(x, y, 0), tiles[0]);
+            }
+        }
+        
+    }
+
+    public void generateArray(int width, int height, bool empty)
+    {
+        map = new Tile[width, height];
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                map[x, y] = (empty) ? 0 : 1;
+                map[x, y] = new Tile();
             }
         }
 
-        return map;
     }
 
-    public int[,] TerrainGeneration(int[,] map) 
-    {
-        float seed = Random.Range(0f, 100000f);
-        // seed = 0.2f
 
+    public void terrainGeneration() 
+    {
+        // Get seed
+        float seed = Random.Range(0f, 100000f); // 0.2f
+
+        // Generate the world
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
+                
                 Vector3 pos = new Vector3(x, y, 0);        
 
                 float AB = Mathf.PerlinNoise((x + seed) * 0.1f, (y + seed) * 0.2f);
@@ -63,34 +84,51 @@ public class WorldGenerator : MonoBehaviour
                 float perlin = (AB + BA) / 2f;
 
                 if (perlin < 0.30f) // Forest
-                    map[x, y] = 2;
+                    map[x, y].type = 2;
                 else if (perlin < 0.55f) // Plains
-                    map[x, y] = 1;
+                    map[x, y].type = 1;
                 else if (perlin < 0.6f) // River
-                    map[x, y] = 0;
+                    map[x, y].type = 0;
                 else if (perlin < 0.8f) // Plains
-                    map[x, y] = 1;
+                    map[x, y].type = 1;
                 else
-                    map[x, y] = 3; // Desert
+                    map[x, y].type = 3; // Desert
 
             }
         }
 
-        return map;
+        // Place the city
+        cityPos = new Vector2Int(
+                    Random.Range(5, width - 5), 
+                    Random.Range(5, width - 5));
+        map[cityPos.x, cityPos.y].type = 100;
+
     }
 
-    public void RenderMap(int[,] map, Tilemap groundTileMap) 
+    public void renderMap() 
     {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                if (map[x, y] <= 4) 
+                if (map[x, y].type < tiles.Length) 
                 {
-                    groundTileMap.SetTile(new Vector3Int(x, y, 0), tiles[map[x, y]]);
+                    tileMap.SetTile(new Vector3Int(x, y, 0), tiles[map[x, y].type]);
+                }
+                else
+                {
+                    tileMap.SetTile(new Vector3Int(x, y, 0), tileCity);
                 }
             }
         }
+    }
+
+
+    // Return the position of the city in world space scale
+    public Vector3 getCityPosition() 
+    {
+        return tileMap.CellToWorld(
+            new Vector3Int(cityPos.x, cityPos.y, -10));
     }
 
 
