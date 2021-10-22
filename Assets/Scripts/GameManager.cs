@@ -6,9 +6,6 @@ using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
-    // Enum
-    public enum Window { Character, TileDetails, Crafting, Happiness, Options };
-
     // Canvas Variables
     CanvasGroup tileDetailsWindow;
     CanvasGroup characterWindow;
@@ -18,20 +15,21 @@ public class GameManager : MonoBehaviour
     Text tileDetailsDetails;
 
     // Game Variables
-    public Biome[] biomes;
+    CameraController cam;
     TileBase[] tiles;
     Tilemap tileMap;
     WorldGenerator worldGenerator;
-    
+    Vector3 lastMouseCoordinate = Vector3.zero;
+
     // Use this for initialization
     void Start()
     {
         // Get data
+        cam = Camera.main.GetComponent<CameraController>();
         worldGenerator = GameObject.Find("Grid/Tilemap").GetComponent<WorldGenerator>();
         tileDetailsWindow = GameObject.Find("Tile Details Window").GetComponent<CanvasGroup>();
         tileDetailsTitle = GameObject.Find("Tile Details Window/Title").GetComponent<Text>();
-        tileDetailsDetails = GameObject.Find("Tile Details Window/Details").GetComponent<Text>();
-
+        tileDetailsDetails = GameObject.Find("Tile Details Window/Description").GetComponent<Text>();
         characterWindow = GameObject.Find("Character Window").GetComponent<CanvasGroup>();
         craftingWindow = GameObject.Find("Crafting Window").GetComponent<CanvasGroup>();
         happinessWindow = GameObject.Find("Happiness Window").GetComponent<CanvasGroup>();
@@ -46,45 +44,45 @@ public class GameManager : MonoBehaviour
     void Update()
     {
 
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int coordinate = tileMap.WorldToCell(mouseWorldPos);
-        
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonUp(0) && !cam.cameraMoving)
         {
-            //tileMap.SetTile(new Vector3Int(coordinate.x, coordinate.y, 0), tiles[3]);
-            tileDetailsWindow.alpha = 1;
-            tileDetailsWindow.interactable = true;
+            // Show the window
+            if (!tileDetailsWindow.interactable) 
+            { 
+                tileDetailsWindow.alpha = 1;
+                tileDetailsWindow.interactable = true;
+                tileDetailsWindow.blocksRaycasts = true;
+            }
 
-            // The tile type
-            tileDetailsTitle.text = biomes[worldGenerator.map[coordinate.x, coordinate.y]].biomeName;
-            tileDetailsDetails.text = biomes[worldGenerator.map[coordinate.x, coordinate.y]].biomeDetails;
+            // Get the tile info
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3Int coords = tileMap.WorldToCell(mouseWorldPos);
+            
+            tileDetailsTitle.text = GameData.biomes[worldGenerator.map[coords.x, coords.y].type].name;
+            tileDetailsDetails.text = GameData.biomes[worldGenerator.map[coords.x, coords.y].type].details;
         }
-        /**/
+
+
     }
 
+    //----------------------------------------------- Button Events -----------------------------------------------\\
+
+    public void collect() 
+    {
+        // lose total workers
+
+        // place workers in the tile
+
+        // the tile change apearance
+
+        // change the button to return button
+
+        // 
+    }
 
     public void showWindow(int window)
     {
-        CanvasGroup windowObject;
-
-        switch (window)
-        {
-            case 0:
-                windowObject = tileDetailsWindow;
-                break;
-            case 1:
-                windowObject = characterWindow;
-                break;
-            case 2:
-                windowObject = craftingWindow;
-                break;
-            case 3:
-                windowObject = happinessWindow;
-                break;
-            default:
-                windowObject = null;
-                break;
-        }
+        CanvasGroup windowObject = getWindowByID(window);
 
         StartCoroutine(DoFadeIn(windowObject));
     }
@@ -92,30 +90,32 @@ public class GameManager : MonoBehaviour
 
     public void closeWindow(int window)
     {
-        CanvasGroup windowObject;
-
-        switch (window)
-        {
-            case 0:
-                windowObject = tileDetailsWindow;
-                break;
-            case 1:
-                windowObject = characterWindow;
-                break;
-            case 2:
-                windowObject = craftingWindow;
-                break;
-            case 3:
-                windowObject = happinessWindow;
-                break;
-            default:
-                windowObject = null;
-                break;
-        }
+        CanvasGroup windowObject = getWindowByID(window);
 
         StartCoroutine(DoFadeOut(windowObject));
     }
 
+
+    CanvasGroup getWindowByID(int id) 
+    {
+        switch(id)
+        {
+            case 0:
+                return tileDetailsWindow;
+            case 1:
+                return characterWindow;
+            case 2:
+                return craftingWindow;
+            case 3:
+                return happinessWindow;
+            default:
+                return null;
+        }
+    }
+
+   
+    //----------------------------------------------- Animations -----------------------------------------------\\
+    
 
     static public IEnumerator DoFadeOut(CanvasGroup canvasG)
     {
@@ -128,6 +128,7 @@ public class GameManager : MonoBehaviour
         canvasG.interactable = false;
         canvasG.blocksRaycasts = false;
     }
+
 
     static public IEnumerator DoFadeIn(CanvasGroup canvasG)
     {

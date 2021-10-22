@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[CreateAssetMenu(fileName = "Biome", menuName = "SustainableCities/Biome")]
-public class Biome : ScriptableObject
+public class Biome
 {
-    public string biomeName;
-    public string biomeDetails;
-    //public int tileTypeID;
+    // Basic Variables
+    public string name;
+    public string details;
 
-    // durability
-    // other things
+    // Workers
 
-    public Material[] materials;
+    //public Material[] materials;
 
+    public Biome(string _name, string _details) 
+    {
+        name = _name;
+        details = _details;
+    }
 }
 
-[System.Serializable]
+//[System.Serializable]
+/*
 public class Material
 {
-    public string materialName;
-}
+    public string name;
+}*/
