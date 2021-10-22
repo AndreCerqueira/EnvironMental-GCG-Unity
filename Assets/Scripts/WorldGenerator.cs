@@ -9,6 +9,7 @@ public class WorldGenerator : MonoBehaviour
     int width, height;
     public TileBase[] tiles;
     public TileBase tileCity;
+    public TileBase tileWorkers;
     public Tilemap tileMap;
     Vector2Int cityPos;
     public Tile[,] map;
@@ -58,7 +59,7 @@ public class WorldGenerator : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                map[x, y] = new Tile();
+                map[x, y] = new Tile(x, y);
             }
         }
 

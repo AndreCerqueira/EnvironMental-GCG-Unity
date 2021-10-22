@@ -9,7 +9,10 @@ public static class GameData
         new Biome("Plains", "Good for crops"),
         new Biome("Forest", "null"),
         new Biome("Desert", "null")
+
     };
+
+    public static Biome city = new Biome("City", "Player 1 city");
 
     // Map Sizes
     public static int width = 20, height = 20;

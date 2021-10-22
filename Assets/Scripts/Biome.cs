@@ -7,17 +7,16 @@ public class Biome
 {
     // Basic Variables
     public string name;
-    public string details;
-
-    // Workers
+    public string description;
 
     //public Material[] materials;
 
-    public Biome(string _name, string _details) 
+    public Biome(string _name, string _description) 
     {
         name = _name;
-        details = _details;
+        description = _description;
     }
+
 }
 
 //[System.Serializable]
