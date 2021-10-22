@@ -28,10 +28,10 @@ public class Player : MonoBehaviour
         
     }
 
-    public void sendWorkers() 
+    public void sendWorkers(Tile tile) 
     {
         workersFree -= 1;
-
+        tile.workers += 1;
     }
 
 
