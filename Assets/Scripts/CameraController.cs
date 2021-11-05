@@ -6,8 +6,8 @@ public class CameraController : MonoBehaviour
 {
     // Variables
     Vector3 touchStart;
-    public float zoomOutMin = 1;
-    public float zoomOutMax = 6;
+    public float zoomOutMin = 3;
+    public float zoomOutMax = 7;
     public bool cameraMoving = false;
     int width;
     int height;
@@ -50,7 +50,7 @@ public class CameraController : MonoBehaviour
             StartCoroutine(detectCameraMoving());
 
             Vector3 nextPosition = Camera.main.transform.position + direction;
-            if (nextPosition.x >= 0 && nextPosition.x <= width && nextPosition.y >= 0 && nextPosition.y <= height)
+            if (nextPosition.x >= 0 && nextPosition.x <= width*3 && nextPosition.y >= 0 && nextPosition.y <= height*3)
                 Camera.main.transform.position += direction;
         }
 
